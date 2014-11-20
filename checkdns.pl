@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 
 #Load modules
-#Edit
 use Socket;
 use Net::DNS;
 use Getopt::Std;
@@ -9,13 +8,21 @@ use Getopt::Std;
 #Assign variables
 
 my $site = @ARGV[1];
+
+$res = new Net::DNS::Resolver;
+$que = $res->query($site, "NS");
+foreach $nameserver ($que->answer) 
+{
+        push @addresses, $nameserver->nsdname;
+}
+
 $resolver = new Net::DNS::Resolver(
-        nameservers => [ '8.8.8.8', '8.8.4.4' ],
+        nameservers => [ @addresses ],
         recurse => 0,
-        debug => 1
+        debug => 0
 );
-$packet = $resolver->search( 'dufva.xyz', 'MX' );
-print $packet;
+
+#Lazy way to make getopts work as intended.
 
 if (@ARGV[2])
 {
@@ -25,8 +32,10 @@ if (@ARGV[2])
         exit 1;
 }
 
+#Getopts!
+
 my %options=();
-getopts("a:m:c:h", \%options);
+getopts("a:m:t:h", \%options);
 
 if ($options{h})
 {
@@ -40,36 +49,44 @@ elsif ($options{m})
 {
         do_m();
 }
-elsif ($options{c})
+elsif ($options{t})
 {
-        do_c();
+        do_t();
 }
 else
 {
         do_help();
 }
 
+#Here we make some subs!
+
 sub do_help {
         print "Usage: ", "checkdns -flag [host]", "\n", "\n", "Flags:", "\n";
         print "-a       Show A records.", "\n";
-        print "-m       Show MX records.", "\n";
-        print "-c       Show CNAME records.", "\n";
         print "-h       Show this help section.", "\n";
+        print "-m       Show MX records.", "\n";
+        print "-t       Show TXT records.", "\n";
+        
 }
+
 sub do_a {
         print "Showing A records.", "\n";
-        print "Site: " . $site, "\n";
-
+        print "Site: ", $site, "\n";
+        $packet = $resolver->search( $site, 'A' );
+        my @answer = $packet->print;
+#        print @answer;
 }
+
 sub do_m {
         print "Showing MX records.", "\n";
-        print "Site: " . $site, "\n";
-        print $reply;
-}
-sub do_c {
-        print "showing CNAME records.";
+        print "Site: ", $site, "\n";
+        $packet = $resolver->search( $site, 'MX' );
+        my @answer = $packet->print;
 }
 
-#@addresses = gethostbyname($name)      or die "Can't resolve $name: $!\n";
-#@addresses = map { inet_ntoa($_) } @addresses[4 .. $#addresses];
-# @addresses is a list of IP addresses ("208.201.239.48", "208.201.239.49")
+sub do_t {
+        print "Showing TXT records.", "\n";
+        print "Site: ", $site, "\n";
+        $packet = $resolver->search( $site, 'TXT');
+        my @answer = $packet->print;
+}
