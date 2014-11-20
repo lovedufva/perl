@@ -90,3 +90,5 @@ sub do_t {
         $packet = $resolver->search( $site, 'TXT');
         my @answer = $packet->print;
 }
+
+#Gonna clear out the answers a bit when I have time.
