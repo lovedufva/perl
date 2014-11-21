@@ -65,8 +65,7 @@ sub do_help {
         print "-a       Show A records.", "\n";
         print "-h       Show this help section.", "\n";
         print "-m       Show MX records.", "\n";
-        print "-t       Show TXT records.", "\n";
-        
+        print "-t       Show TXT records.", "\n";    
 }
 
 sub do_a {
