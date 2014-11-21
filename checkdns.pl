@@ -74,7 +74,6 @@ sub do_a {
         print "Site: ", $site, "\n";
         $packet = $resolver->search( $site, 'A' );
         my @answer = $packet->print;
-#        print @answer;
 }
 
 sub do_m {
