@@ -1,3 +1,4 @@
+
 #!/usr/bin/perl -w
 
 # use module
@@ -20,10 +21,21 @@ my $file        = "sl.xml";
 my $response    = getstore($url, $file);
 my $doc         = $parser->XMLin($file);
 
-
 # read XML file
 #/ResponseOfDepartures/ResponseData/Buses/Bus/"buss från"..StopAreaName.."Till"..Destination.."Avgår"..DisplayTime
 foreach $e (@{$doc->{ResponseData}->{Buses}->{Bus}})
 {
-        print "Buss från ", $e->{StopAreaName}, " mot ", $e->{Destination}, " avgår om ", $e->{DisplayTime}, ".", "\n", "\n";
+        if ($e->{Destination} eq 'Stora Essingen') {
+                print "Buss från ", $e->{StopAreaName}, " mot ", $e->{Destination}, " avgår ";
+                if ($e->{DisplayTime} eq 'Nu') {
+                        print "nu";
+                }
+                elsif ($e->{DisplayTime} =~ 'min') {
+                        print "om ", $e->{DisplayTime};
+                }
+                elsif ($e->{DisplayTime} =~ ':') {
+                        print $e->{DisplayTime};
+                }
+                print ".", "\n", "\n";
+        }
 }
