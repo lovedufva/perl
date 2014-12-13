@@ -20,10 +20,9 @@ my $file        = "sl.xml";
 my $response    = getstore($url, $file);
 my $doc         = $parser->XMLin($file);
 
-#print Dumper($doc);
+
 # read XML file
 #/ResponseOfDepartures/ResponseData/Buses/Bus/"buss från"..StopAreaName.."Till"..Destination.."Avgår"..DisplayTime
-#die;
 foreach $e (@{$doc->{ResponseData}->{Buses}->{Bus}})
 {
         print "Buss från ", $e->{StopAreaName}, " mot ", $e->{Destination}, " avgår om ", $e->{DisplayTime}, ".", "\n", "\n";
